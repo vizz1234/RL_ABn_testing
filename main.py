@@ -3,6 +3,8 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 import redis
 from eGreedy import eGreedy
+from UCB import UCB
+from thompsonSampling import thompsonSampling
 
 app = FastAPI()
 r = redis.Redis(host='localhost', port=6379, decode_responses=True)
@@ -15,14 +17,17 @@ VARIANTS = {
 }
 reverseVARIANTS = {v: k for k, v in VARIANTS.items()}
 EPSILON = 0.1
-agentName = "eGreedy"
-agent = eGreedy(nArms = len(VARIANTS), redisClient = r)
+# agentName = "eGreedy" #UCB, tSampling
+agentName = "UCB"
+# agent = eGreedy(nArms = len(VARIANTS), redisClient = r)
+agent = UCB(nArms = len(VARIANTS), redisClient = r, name = agentName)
 
 @app.get("/", response_class=HTMLResponse)
 async def showPage(request: Request):
     action = agent.selectArm()
     variant = VARIANTS[action]
     r.hincrby(f"{agentName}:arm:{action}", "views", 1)
+    agent.update(action, 0)
     return templates.TemplateResponse("index.html", {"request": request, "variant": variant})
 
 @app.get("/click/{variant}")
@@ -35,11 +40,4 @@ async def trackClick(variant: str):
 
 @app.get("/stats")
 def stats():
-    return {
-        v: {
-            "clicks": int(r.hget(f"{agentName}:arm:{v}", 'count') or 0),
-            "views": int(r.hget(f"{agentName}:arm:{v}", 'views') or 0),
-            "estimate": round((int(r.hget(f"{agentName}:arm:{v}", 'count') or 0) + agent.initial)/ int(r.hget(f"{agentName}:arm:{v}", 'views') or 1), 2)
-        }
-        for v in VARIANTS
-    }
+    return agent.stats()
