@@ -19,8 +19,8 @@ class UCB:
         counts = []
 
         for i in range(self.nArms):
-            v = int(self.r.hget(f"{self.name}:arm:{i}", "views") or 0)
-            c = int(self.r.hget(f"{self.name}:arm:{i}", "count") or 0)
+            v = int(self.redisClient.hget(f"{self.name}:arm:{i}", "views") or 0)
+            c = int(self.redisClient.hget(f"{self.name}:arm:{i}", "count") or 0)
             views.append(v)
             counts.append(c)
             total_views += v
@@ -30,29 +30,29 @@ class UCB:
 
         ucb_values = []
         for i in range(self.nArms):
-            avg = counts[i] / views[i]
-            bonus = self.c * math.sqrt((math.log(total_views)) / views[i])
+            avg = counts[i] / views[i] if views[i] > 0 else 0
+            bonus = self.c * math.sqrt((math.log(total_views)) / views[i]) if views[i] > 0 else 0
             ucb_values.append(avg + bonus)
-            self.r.hset(f"{self.name}:arm:{i}", "QEstimate", avg + bonus)
+            self.redisClient.hset(f"{self.name}:arm:{i}", "QEstimate", avg + bonus)
 
         return ucb_values.index(max(ucb_values))
 
     def update(self, chosen_arm, reward):
-        self.r.hincrby(f"{self.name}:arm:{chosen_arm}", "count", reward)
+        self.redisClient.hincrby(f"{self.name}:arm:{chosen_arm}", "count", reward)
         total_views = 0
         views = []
         counts = []
 
         for i in range(self.nArms):
-            v = int(self.r.hget(f"{self.name}:arm:{i}", "views") or 0)
-            c = int(self.r.hget(f"{self.name}:arm:{i}", "count") or 0)
+            v = int(self.redisClient.hget(f"{self.name}:arm:{i}", "views") or 0)
+            c = int(self.redisClient.hget(f"{self.name}:arm:{i}", "count") or 0)
             views.append(v)
             counts.append(c)
             total_views += v
         for i in range(self.nArms):
-            avg = counts[i] / views[i]
-            bonus = self.c * math.sqrt((math.log(total_views)) / views[i])
-            self.r.hset(f"{self.name}:arm:{i}", "QEstimate", avg + bonus)
+            avg = counts[i] / views[i] if views[i] > 0 else 0
+            bonus = self.c * math.sqrt((math.log(total_views)) / views[i]) if views[i] > 0 else 0
+            self.redisClient.hset(f"{self.name}:arm:{i}", "QEstimate", avg + bonus)
     
     def stats(self):
         statsDic = {}
