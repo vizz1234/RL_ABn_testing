@@ -10,6 +10,7 @@ q_estimates = [0, 0, 0]  # Optimistic initialization (optional)
 views_history = [[], [], []]
 iterations = 1000
 c = 2  # Exploration constant
+already_run = set()
 
 fig, ax = plt.subplots()
 
@@ -26,6 +27,9 @@ def update_estimate(arm, reward):
     q_estimates[arm] += (reward - q_estimates[arm]) / counts[arm]
 
 def animate(frame):
+    if frame in already_run:
+        return
+    already_run.add(frame)
     ax.clear()
     arm = select_arm_ucb(frame + 1)
     reward = 1 if random.random() < true_rewards[arm] else 0
@@ -37,8 +41,8 @@ def animate(frame):
 
     ax.set_xlim(0, iterations)
     ax.set_ylim(0, max(sum(counts), 1))
-    ax.set_title(f"UCB (c = {c}) | Iteration {frame}")
+    ax.set_title(f"UCB (c = {c}) | Iteration {1 + frame}")
     ax.legend()
 
-ani = FuncAnimation(fig, animate, frames=iterations, repeat=False, interval=3)
+ani = FuncAnimation(fig, animate, frames=iterations, repeat=False, interval=1)
 plt.show()
