@@ -25,7 +25,6 @@ class thompsonSampling:
             successes = int(self.redisClient.hget(key, "successes") or 0)
             views = int(self.redisClient.hget(key, "successes") or 0)
             failures = views - successes
-            # self.redisClient.hset(f"{self.name}:arm:{arm}", "failures", failures)
             sample = np.random.beta(successes + self.alpha, failures + self.beta)
             sampled_values.append((sample, arm))
         # Pick arm with highest sample
