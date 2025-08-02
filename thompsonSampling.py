@@ -26,7 +26,7 @@ class thompsonSampling:
             successes = int(self.redisClient.hget(key, "successes") or 0)
             views = int(self.redisClient.hget(key, "successes") or 0)
             failures = views - successes
-            self.redisClient.hset(f"{self.name}:arm:{arm}", "failures", failures)
+            # self.redisClient.hset(f"{self.name}:arm:{arm}", "failures", failures)
             sample = np.random.beta(successes + self.alpha, failures + self.beta)
             sampled_values.append((sample, arm))
         # Pick arm with highest sample
@@ -37,6 +37,10 @@ class thompsonSampling:
         key = f"{self.name}:arm:{arm}"
         if reward > 0:
             self.redisClient.hincrby(key, "successes", 1)
+        else:
+            views = int(self.redisClient.hget(key, "views") or 0)
+            s = int(self.redisClient.hget(key, "successes") or 0)
+            self.redisClient.hset(key, "failures", views - s)
 
     def stats(self):
         statsDic = {}

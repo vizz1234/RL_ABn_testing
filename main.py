@@ -17,17 +17,19 @@ VARIANTS = {
 }
 reverseVARIANTS = {v: k for k, v in VARIANTS.items()}
 EPSILON = 0.1
-# agentName = "eGreedy" #UCB, tSampling
-agentName = "UCB"
+# agentName = "eGreedy"
+# agentName = "UCB"
+agentName = "thompsonSampling"
 # agent = eGreedy(nArms = len(VARIANTS), redisClient = r)
-agent = UCB(nArms = len(VARIANTS), redisClient = r, name = agentName)
+# agent = UCB(nArms = len(VARIANTS), redisClient = r, name = agentName)
+agent = thompsonSampling(nArms = len(VARIANTS), redisClient = r, name = agentName)
 
 @app.get("/", response_class=HTMLResponse)
 async def showPage(request: Request):
     action = agent.selectArm()
     variant = VARIANTS[action]
     r.hincrby(f"{agentName}:arm:{action}", "views", 1)
-    agent.update(action, 0)
+    agent.update(action, reward=0)
     return templates.TemplateResponse("index.html", {"request": request, "variant": variant})
 
 @app.get("/click/{variant}")
