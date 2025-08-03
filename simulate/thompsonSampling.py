@@ -73,4 +73,5 @@ def animate(frame):
 
 ani = FuncAnimation(fig, animate, frames=iterations, repeat=False, interval=1)
 plt.tight_layout()
+ani.save("ts.mp4", writer="ffmpeg", fps=60)
 plt.show()

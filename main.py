@@ -5,24 +5,20 @@ import redis
 from eGreedy import eGreedy
 from UCB import UCB
 from thompsonSampling import thompsonSampling
+from config import REDIS_HOST, REDIS_PORT, REDIS_DECODE_RESPONSES, VARIANTS, EPSILON, AGENT_NAME, C
 
 app = FastAPI()
-r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=REDIS_DECODE_RESPONSES)
 templates = Jinja2Templates(directory="templates")
-
-VARIANTS = {
-    0: "A",
-    1: "B",
-    2: "C"
-}
 reverseVARIANTS = {v: k for k, v in VARIANTS.items()}
-EPSILON = 0.1
-# agentName = "eGreedy"
-# agentName = "UCB"
-agentName = "thompsonSampling"
-# agent = eGreedy(nArms = len(VARIANTS), redisClient = r)
-# agent = UCB(nArms = len(VARIANTS), redisClient = r, name = agentName)
-agent = thompsonSampling(nArms = len(VARIANTS), redisClient = r, name = agentName)
+agentName = AGENT_NAME
+
+if agentName == "eGreedy":
+    agent = eGreedy(nArms = len(VARIANTS), epsilon= EPSILON, redisClient = r)
+if agentName == "UCB":
+    agent = UCB(nArms = len(VARIANTS), redisClient = r, name = agentName, c = C)
+if agentName == "thompsonSampling":
+    agent = thompsonSampling(nArms = len(VARIANTS), redisClient = r, name = agentName)
 
 @app.get("/", response_class=HTMLResponse)
 async def showPage(request: Request):

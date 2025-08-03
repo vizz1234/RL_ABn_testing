@@ -3,7 +3,7 @@ from matplotlib.animation import FuncAnimation
 import random
 
 # Simulated true rewards for 3 arms
-true_rewards = [0.4, 0.6, 0.5]
+true_rewards = [0.12, 0.65, 0.5]
 counts = [1, 1, 1]
 q_estimates = [2, 2, 2]
 
@@ -42,4 +42,6 @@ def animate(frame):
     ax.legend()
 
 ani = FuncAnimation(fig, animate, frames=iterations, repeat=False, interval=1)
-plt.show()
+# ani.save("epsilon_greedy.gif", writer="pillow", fps=30)
+ani.save("epsilon_greedy.mp4", writer="ffmpeg", fps=60)
+# plt.show()

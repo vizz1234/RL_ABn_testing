@@ -45,4 +45,5 @@ def animate(frame):
     ax.legend()
 
 ani = FuncAnimation(fig, animate, frames=iterations, repeat=False, interval=1)
+ani.save("ucb.mp4", writer="ffmpeg", fps=60)
 plt.show()
