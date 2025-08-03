@@ -16,7 +16,7 @@ Traditional A/B testing wastes traffic by allocating equally or randomly. RL-bas
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/your-username/RL-AB-testing.git
+git clone https://github.com/vizz1234/RL_ABn_testing.git
 cd RL-AB-testing
 ```
 
