@@ -1,4 +1,4 @@
-# 🎯 RL-Based A/B/n Testing
+# 🎯 RL‑powered Real‑Time A/B/n Testing
 
 A practical, plug-and-play framework to run **real-time A/B/n testing** using **Reinforcement Learning (Multi-Armed Bandits)**. Supports Epsilon-Greedy, UCB, and Thompson Sampling agents, both in **live deployments** (via FastAPI + Redis) and **offline simulations**.
 
