@@ -60,7 +60,9 @@ This app mimics a web experiment where users are shown different variants.
 fastapi dev main.py
 ```
 
-Then open http://localhost:8000 — each refresh mimics a new user. Behind the scenes, the selected agent (e.g., ε-Greedy) updates estimates and shifts traffic in real-time, backed by Redis.
+Then open http://localhost:8000 — each refresh mimics a new user. Behind the scenes, the selected agent (e.g., ε-Greedy) updates estimates and shifts traffic in real-time, backed by Redis. 
+
+Go to http://localhost:8000/stats for viewing metrics of each variant.
 
 
 ## 📊 Simulation Mode (Offline)
